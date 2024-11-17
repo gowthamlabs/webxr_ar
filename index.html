@@ -5,121 +5,103 @@
       <meta name="viewport"
          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
       <title>Hello WebXR!</title>
-      <!-- Include three.js -->
       <script src="https://unpkg.com/three@0.150.0/build/three.js"></script>
    </head>
    <body>
-      <!-- Start WebXR button -->
       <button id="startXRButton">Start Hello WebXR</button>
       <script>
          async function activateXR() {
-            // Check if WebXR is supported
             if (!navigator.xr) {
                alert("WebXR not supported on this device or browser.");
                return;
             }
 
             try {
-                // Check if 'immersive-ar' session type is supported
-                const isSupported = await navigator.xr.isSessionSupported("immersive-ar");
-                if (!isSupported) {
-                    alert("AR is not supported on this device/browser.");
-                    return;
-                }
+               const isSupported = await navigator.xr.isSessionSupported("immersive-ar");
+               if (!isSupported) {
+                  alert("AR is not supported on this device/browser.");
+                  return;
+               }
 
-                // Request immersive AR session
-                const session = await navigator.xr.requestSession("immersive-ar");
-                console.log("AR session started!");
+               const session = await navigator.xr.requestSession("immersive-ar");
 
-                // Add a canvas element for rendering
-                const canvas = document.createElement("canvas");
-                canvas.style.position = "absolute";
-                canvas.style.top = "0";
-                canvas.style.left = "0";
-                canvas.style.width = "100%";
-                canvas.style.height = "100%";
-                document.body.appendChild(canvas);
+               const canvas = document.createElement("canvas");
+               canvas.style.position = "absolute";
+               canvas.style.top = "0";
+               canvas.style.left = "0";
+               canvas.style.width = "100%";
+               canvas.style.height = "100%";
+               document.body.appendChild(canvas);
 
-                const gl = canvas.getContext("webgl", { xrCompatible: true });
+               const gl = canvas.getContext("webgl", { xrCompatible: true });
 
-                // Initialize Three.js scene
-                const scene = new THREE.Scene();
+               const scene = new THREE.Scene();
+               console.log("Scene initialized.");
 
-                // Add a colorful cube
-                const materials = [
-                    new THREE.MeshBasicMaterial({ color: 0xff0000 }),
-                    new THREE.MeshBasicMaterial({ color: 0x0000ff }),
-                    new THREE.MeshBasicMaterial({ color: 0x00ff00 }),
-                    new THREE.MeshBasicMaterial({ color: 0xff00ff }),
-                    new THREE.MeshBasicMaterial({ color: 0x00ffff }),
-                    new THREE.MeshBasicMaterial({ color: 0xffff00 }),
-                ];
-                const cube = new THREE.Mesh(
-                    new THREE.BoxGeometry(0.2, 0.2, 0.2),
-                    materials
-                );
-                cube.position.set(0, 0, -1); // Place cube 1 meter in front of the user
-                scene.add(cube);
+               const materials = [
+                  new THREE.MeshBasicMaterial({ color: 0xff0000 }),
+                  new THREE.MeshBasicMaterial({ color: 0x0000ff }),
+                  new THREE.MeshBasicMaterial({ color: 0x00ff00 }),
+                  new THREE.MeshBasicMaterial({ color: 0xff00ff }),
+                  new THREE.MeshBasicMaterial({ color: 0x00ffff }),
+                  new THREE.MeshBasicMaterial({ color: 0xffff00 }),
+               ];
+               const cube = new THREE.Mesh(
+                  new THREE.BoxGeometry(0.2, 0.2, 0.2),
+                  materials
+               );
+               cube.position.set(0, 0, -0.5);
+               scene.add(cube);
+               console.log("Cube added to scene:", cube);
 
-                // Set up the WebGL renderer
-                const renderer = new THREE.WebGLRenderer({
-                    canvas: canvas,
-                    context: gl,
-                    alpha: true,
-                    preserveDrawingBuffer: true,
-                });
-                renderer.autoClear = false;
+               const renderer = new THREE.WebGLRenderer({
+                  canvas: canvas,
+                  context: gl,
+                  alpha: true,
+               });
+               renderer.autoClear = false;
 
-                // Set up the camera
-                const camera = new THREE.PerspectiveCamera();
-                camera.matrixAutoUpdate = false;
+               const camera = new THREE.PerspectiveCamera();
+               camera.matrixAutoUpdate = false;
 
-                // Initialize WebXR session and WebGL layer
-                session.updateRenderState({
-                    baseLayer: new XRWebGLLayer(session, gl),
-                });
+               session.updateRenderState({
+                  baseLayer: new XRWebGLLayer(session, gl),
+               });
 
-                // Create a reference space
-                const referenceSpace = await session.requestReferenceSpace("local");
+               const referenceSpace = await session.requestReferenceSpace("local");
 
-                // Render loop for WebXR
-                const onXRFrame = (time, frame) => {
-                    session.requestAnimationFrame(onXRFrame);
+               const onXRFrame = (time, frame) => {
+                  session.requestAnimationFrame(onXRFrame);
 
-                    const pose = frame.getViewerPose(referenceSpace);
-                    if (pose) {
-                        const view = pose.views[0];
-                        const viewport = session.renderState.baseLayer.getViewport(view);
-                        renderer.setSize(viewport.width, viewport.height);
-                        gl.viewport(
-                            viewport.x,
-                            viewport.y,
-                            viewport.width,
-                            viewport.height
-                        );
+                  const pose = frame.getViewerPose(referenceSpace);
+                  if (pose) {
+                     const view = pose.views[0];
+                     const viewport = session.renderState.baseLayer.getViewport(view);
+                     renderer.setSize(viewport.width, viewport.height);
+                     gl.viewport(
+                        viewport.x,
+                        viewport.y,
+                        viewport.width,
+                        viewport.height
+                     );
 
-                        // Update camera matrices
-                        camera.matrix.fromArray(view.transform.matrix);
-                        camera.projectionMatrix.fromArray(view.projectionMatrix);
-                        camera.updateMatrixWorld(true);
+                     camera.matrix.fromArray(view.transform.matrix);
+                     camera.projectionMatrix.fromArray(view.projectionMatrix);
+                     camera.updateMatrixWorld(true);
 
-                        // Render the scene
-                        renderer.render(scene, camera);
-                    }
-                };
+                     renderer.render(scene, camera);
+                  }
+               };
 
-                session.requestAnimationFrame(onXRFrame);
+               session.requestAnimationFrame(onXRFrame);
 
             } catch (err) {
-                console.error("Failed to start AR session:", err);
-                alert("Failed to start AR session. Check console for details.");
+               console.error("Failed to start AR session:", err);
+               alert("Failed to start AR session. Check console for details.");
             }
          }
 
-         // Attach event listener to button
-         document
-            .getElementById("startXRButton")
-            .addEventListener("click", activateXR);
+         document.getElementById("startXRButton").addEventListener("click", activateXR);
       </script>
    </body>
 </html>
