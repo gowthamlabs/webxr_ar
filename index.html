@@ -21,6 +21,22 @@ async function activateXR() {
   document.body.appendChild(canvas);
   const gl = canvas.getContext("webgl", {xrCompatible: true});
 
+  // To verify the AR support of the device
+  try {
+         // Check if 'immersive-ar' session type is supported
+         const isSupported = await navigator.xr.isSessionSupported("immersive-ar");
+         if (!isSupported) {
+            alert("AR is not supported on this device/browser.");
+            return;
+         }
+         const session = await navigator.xr.requestSession("immersive-ar");
+         console.log("AR session started!");
+         // Initialize your WebXR session setup here...
+      } catch (err) {
+         console.error("Failed to start AR session:", err);
+         alert("Failed to start AR session. Check console for details.");
+      }
+
   // To be continued in upcoming steps.
 const scene = new THREE.Scene();
 
