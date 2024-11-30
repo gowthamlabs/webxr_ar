@@ -8,47 +8,28 @@
   <!-- Include Three.js -->
   <script src="https://unpkg.com/three@0.126.0/build/three.js"></script>
 
-  <!-- Include WebXR Polyfill -->
-  <script src="https://unpkg.com/webxr-polyfill/build/webxr-polyfill.min.js"></script>
+  <!-- Include GLTF Exporter -->
+  <script src="https://unpkg.com/three/examples/js/exporters/GLTFExporter.js"></script>
 
-  <!-- Include model-viewer for iOS fallback -->
+  <!-- Include model-viewer -->
   <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
 </head>
 <body>
   <h1>Hello AR!</h1>
 
-  <!-- Button for starting WebXR -->
-  <button id="startXR" onclick="activateXR()">Start WebXR</button>
+  <!-- Button for creating and exporting the cube -->
+  <button id="createCube">Create and Export Cube</button>
 
   <!-- Fallback for iOS -->
-  <div id="iosFallback" style="display: none;">
-    <h2>Your device does not support WebXR. Try this AR object:</h2>
-    <!-- <model-viewer src="path-to-3d-model.glb" ar ar-modes="scene-viewer quick-look" camera-controls auto-rotate style="width: 100%; height: 400px;">
-    </model-viewer> -->
+  <div id="iosFallback">
+    <h2>Your device does not support WebXR. Here's the 3D object:</h2>
+    <model-viewer id="modelViewer" ar ar-modes="scene-viewer quick-look" camera-controls auto-rotate style="width: 100%; height: 400px;">
+    </model-viewer>
   </div>
 
   <script>
-    async function activateXR() {
-      // Check for WebXR support
-      if (!navigator.xr || !navigator.xr.isSessionSupported) {
-        document.getElementById('iosFallback').style.display = 'block';
-        console.warn("WebXR is not supported. Using iOS fallback.");
-        return;
-      }
-
-      // Check if "immersive-ar" is supported
-      const isARSupported = await navigator.xr.isSessionSupported("immersive-ar");
-      if (!isARSupported) {
-        document.getElementById('iosFallback').style.display = 'block';
-        console.warn("Immersive AR is not supported. Using iOS fallback.");
-        return;
-      }
-
-      // WebXR code for AR
-      const canvas = document.createElement("canvas");
-      document.body.appendChild(canvas);
-      const gl = canvas.getContext("webgl", { xrCompatible: true });
-
+    // Function to create the cube in a Three.js scene
+    function createCubeScene() {
       const scene = new THREE.Scene();
       const materials = [
         new THREE.MeshBasicMaterial({ color: 0xff0000 }),
@@ -62,44 +43,31 @@
       cube.position.set(0, 0, -1);
       scene.add(cube);
 
-      const renderer = new THREE.WebGLRenderer({
-        alpha: true,
-        preserveDrawingBuffer: true,
-        canvas: canvas,
-        context: gl,
-      });
-      renderer.autoClear = false;
-
-      const camera = new THREE.PerspectiveCamera();
-      camera.matrixAutoUpdate = false;
-
-      const session = await navigator.xr.requestSession("immersive-ar");
-      session.updateRenderState({
-        baseLayer: new XRWebGLLayer(session, gl),
-      });
-
-      const referenceSpace = await session.requestReferenceSpace("local");
-
-      const onXRFrame = (time, frame) => {
-        session.requestAnimationFrame(onXRFrame);
-
-        gl.bindFramebuffer(gl.FRAMEBUFFER, session.renderState.baseLayer.framebuffer);
-
-        const pose = frame.getViewerPose(referenceSpace);
-        if (pose) {
-          const view = pose.views[0];
-          const viewport = session.renderState.baseLayer.getViewport(view);
-          renderer.setSize(viewport.width, viewport.height);
-
-          camera.matrix.fromArray(view.transform.matrix);
-          camera.projectionMatrix.fromArray(view.projectionMatrix);
-          camera.updateMatrixWorld(true);
-
-          renderer.render(scene, camera);
-        }
-      };
-      session.requestAnimationFrame(onXRFrame);
+      return scene;
     }
+
+    // Function to export the scene as GLTF/GLB
+    function exportSceneToGLTF(scene) {
+      const exporter = new THREE.GLTFExporter();
+
+      exporter.parse(scene, (gltf) => {
+        // Convert the exported GLTF data to a Blob
+        const blob = new Blob([JSON.stringify(gltf)], { type: "application/json" });
+
+        // Create an object URL and set it to the model-viewer's src
+        const modelViewer = document.getElementById("modelViewer");
+        const url = URL.createObjectURL(blob);
+        modelViewer.src = url;
+
+        console.log("GLTF exported and loaded into <model-viewer>.");
+      });
+    }
+
+    // Event listener for the createCube button
+    document.getElementById("createCube").addEventListener("click", () => {
+      const cubeScene = createCubeScene();
+      exportSceneToGLTF(cubeScene);
+    });
   </script>
 </body>
 </html>
