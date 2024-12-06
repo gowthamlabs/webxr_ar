@@ -3,34 +3,30 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
-  <title>WebXR with iOS Fallback</title>
+  <title>AR for Android and iOS</title>
 
   <!-- Include Three.js -->
   <script src="https://unpkg.com/three@0.126.0/build/three.js"></script>
-
-  <!-- Include GLTF Exporter -->
-  <script src="https://unpkg.com/three/examples/js/exporters/GLTFExporter.js"></script>
-
-  <!-- Include model-viewer -->
-  <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
 </head>
 <body>
   <h1>Hello AR!</h1>
 
-  <!-- Button for creating and exporting the cube -->
-  <button id="createCube">Create and Export Cube</button>
-
-  <!-- Fallback for iOS -->
-  <div id="iosFallback">
-    <h2>Your device does not support WebXR. Here's the 3D object:</h2>
-    <model-viewer id="modelViewer" ar ar-modes="scene-viewer quick-look" camera-controls auto-rotate style="width: 100%; height: 400px;">
-    </model-viewer>
-  </div>
+  <!-- Buttons for AR interaction -->
+  <button id="startAndroidAR" style="display: none;">Start AR (Android)</button>
+  <a id="iosARLink" href="path-to-your-model.usdz" rel="ar" style="display: none;">
+    <img src="ar-icon.png" alt="View in AR">
+  </a>
 
   <script>
-    // Function to create the cube in a Three.js scene
-    function createCubeScene() {
+    async function activateAndroidAR() {
+      // Add a canvas element and initialize a WebGL context that is compatible with WebXR.
+      const canvas = document.createElement("canvas");
+      document.body.appendChild(canvas);
+      const gl = canvas.getContext("webgl", { xrCompatible: true });
+
       const scene = new THREE.Scene();
+
+      // Create a colorful cube.
       const materials = [
         new THREE.MeshBasicMaterial({ color: 0xff0000 }),
         new THREE.MeshBasicMaterial({ color: 0x0000ff }),
@@ -39,35 +35,57 @@
         new THREE.MeshBasicMaterial({ color: 0x00ffff }),
         new THREE.MeshBasicMaterial({ color: 0xffff00 }),
       ];
+
       const cube = new THREE.Mesh(new THREE.BoxBufferGeometry(0.2, 0.2, 0.2), materials);
       cube.position.set(0, 0, -1);
       scene.add(cube);
 
-      return scene;
-    }
-
-    // Function to export the scene as GLTF/GLB
-    function exportSceneToGLTF(scene) {
-      const exporter = new THREE.GLTFExporter();
-
-      exporter.parse(scene, (gltf) => {
-        // Convert the exported GLTF data to a Blob
-        const blob = new Blob([JSON.stringify(gltf)], { type: "application/json" });
-
-        // Create an object URL and set it to the model-viewer's src
-        const modelViewer = document.getElementById("modelViewer");
-        const url = URL.createObjectURL(blob);
-        modelViewer.src = url;
-
-        console.log("GLTF exported and loaded into <model-viewer>.");
+      const renderer = new THREE.WebGLRenderer({
+        alpha: true,
+        preserveDrawingBuffer: true,
+        canvas: canvas,
+        context: gl,
       });
+      renderer.autoClear = false;
+
+      const camera = new THREE.PerspectiveCamera();
+      camera.matrixAutoUpdate = false;
+
+      const session = await navigator.xr.requestSession("immersive-ar");
+      session.updateRenderState({ baseLayer: new XRWebGLLayer(session, gl) });
+
+      const referenceSpace = await session.requestReferenceSpace("local");
+
+      const onXRFrame = (time, frame) => {
+        session.requestAnimationFrame(onXRFrame);
+
+        gl.bindFramebuffer(gl.FRAMEBUFFER, session.renderState.baseLayer.framebuffer);
+
+        const pose = frame.getViewerPose(referenceSpace);
+        if (pose) {
+          const view = pose.views[0];
+          const viewport = session.renderState.baseLayer.getViewport(view);
+          renderer.setSize(viewport.width, viewport.height);
+
+          camera.matrix.fromArray(view.transform.matrix);
+          camera.projectionMatrix.fromArray(view.projectionMatrix);
+          camera.updateMatrixWorld(true);
+
+          renderer.render(scene, camera);
+        }
+      };
+      session.requestAnimationFrame(onXRFrame);
     }
 
-    // Event listener for the createCube button
-    document.getElementById("createCube").addEventListener("click", () => {
-      const cubeScene = createCubeScene();
-      exportSceneToGLTF(cubeScene);
-    });
+    // Detect the platform and show appropriate AR option.
+    if (navigator.userAgent.includes('Android')) {
+      document.getElementById('startAndroidAR').style.display = 'block';
+      document.getElementById('startAndroidAR').addEventListener('click', activateAndroidAR);
+    } else if (navigator.userAgent.includes('iPhone') || navigator.userAgent.includes('iPad')) {
+      document.getElementById('iosARLink').style.display = 'block';
+    } else {
+      alert("AR is only supported on Android with Chrome or iOS with Safari.");
+    }
   </script>
 </body>
 </html>
