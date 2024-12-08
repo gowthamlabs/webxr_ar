@@ -40,7 +40,8 @@
       let model;
       // Load GLTF model from external URL.
       const loader = new THREE.GLTFLoader();
-      loader.load('https://cdn.jsdelivr.net/gh/gowthamlabs/webxr_ar@webgl_3D_models/3DModel.gltf',
+      // https://cdn.jsdelivr.net/gh/gowthamlabs/webxr_ar@webgl_3D_models/3DModel.gltf
+      loader.load('https://immersive-web.github.io/webxr-samples/media/gltf/sunflower/sunflower.gltf',
         (gltf) => {
           model = gltf.scene;
           model.position.set(0, 0, -1);
