@@ -70,6 +70,44 @@
 
       const referenceSpace = await session.requestReferenceSpace("local");
 
+      let initialPinchDistance = null; // To store the initial pinch distance
+      let scaleFactor = 0.2; // Initial model scale
+    
+      // Detect pinch gesture and resize the model
+      canvas.addEventListener('touchstart', (event) => {
+        if (event.touches.length === 2) {
+          // Calculate the initial pinch distance between the two fingers
+          const touch1 = event.touches[0];
+          const touch2 = event.touches[1];
+          initialPinchDistance = Math.hypot(touch2.clientX - touch1.clientX, touch2.clientY - touch1.clientY);
+        }
+      });
+
+      canvas.addEventListener('touchmove', (event) => {
+        if (event.touches.length === 2 && initialPinchDistance !== null) {
+          // Calculate the current pinch distance between the two fingers
+          const touch1 = event.touches[0];
+          const touch2 = event.touches[1];
+          const currentPinchDistance = Math.hypot(touch2.clientX - touch1.clientX, touch2.clientY - touch1.clientY);
+    
+          // Calculate the scale factor based on the pinch distance change
+          const scaleChange = currentPinchDistance / initialPinchDistance;
+          scaleFactor *= scaleChange; // Adjust the model's scale
+    
+          // Set the new scale for the model
+          scaleFactor = Math.max(0.1, Math.min(3, scaleFactor)); // Prevent the model from being too small or too large
+          model.scale.set(scaleFactor, scaleFactor, scaleFactor);
+    
+          // Update initial pinch distance for next move event
+          initialPinchDistance = currentPinchDistance;
+        }
+      });
+
+      canvas.addEventListener('touchend', () => {
+        // Reset the pinch distance when the touch ends
+        initialPinchDistance = null;
+      });
+
       const onXRFrame = (time, frame) => {
         session.requestAnimationFrame(onXRFrame);
 
