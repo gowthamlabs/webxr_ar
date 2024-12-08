@@ -42,8 +42,8 @@
         (gltf) => {
           const model = gltf.scene;
           model.position.set(0, 0, -1);
-          model.position.set(0, -0.5, -3); // Position the model far from the camera and slightly below
-          model.scale.set(0.3, 0.3, 0.3); // Make the model smaller
+          model.position.set(0, 0, -2); // Position the model far from the camera and slightly below
+          model.scale.set(0.2, 0.2, 0.2); // Make the model smaller
           scene.add(model);
         },
         (xhr) => {
