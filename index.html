@@ -45,6 +45,17 @@
           model.position.set(0, 0, -1);
           model.position.set(0, 0, -2); // Position the model far from the camera and slightly below
           model.scale.set(0.2, 0.2, 0.2); // Make the model smaller
+
+          // Ensure materials respond to lighting properly (if not set in the GLTF)
+          model.traverse((child) => {
+            if (child.isMesh) {
+              child.material = new THREE.MeshStandardMaterial({
+                color: 0xffffff,    // Set a default color
+                roughness: 0.5,     // Set roughness to make the material respond better to light
+                metalness: 0.5,     // Add some metalness to reflect light better
+              });
+            }
+          });
           scene.add(model);
         },
         (xhr) => {
