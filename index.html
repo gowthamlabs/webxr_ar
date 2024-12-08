@@ -37,17 +37,19 @@
       directionalLight.position.set(10, 15, 10);
       scene.add(directionalLight);
 
+      let model;
       // Load GLTF model from external URL.
       const loader = new THREE.GLTFLoader();
       loader.load('https://cdn.jsdelivr.net/gh/gowthamlabs/webxr_ar@webgl_3D_models/3DModel.gltf',
         (gltf) => {
-          const model = gltf.scene;
+          model = gltf.scene;
           model.position.set(0, 0, -1);
           model.position.set(0, 0, -2); // Position the model far from the camera and slightly below
           model.scale.set(0.2, 0.2, 0.2); // Make the model smaller
 
           // Ensure materials respond to lighting properly (if not set in the GLTF)
-          model.traverse((child) => {
+          // Commented code not working issue should be with 3d object
+          /*model.traverse((child) => {
             if (child.isMesh) {
               child.material = new THREE.MeshStandardMaterial({
                 color: 0xffffff,    // Set a default color
@@ -55,7 +57,7 @@
                 metalness: 0.5,     // Add some metalness to reflect light better
               });
             }
-          });
+          });*/
           scene.add(model);
         },
         (xhr) => {
