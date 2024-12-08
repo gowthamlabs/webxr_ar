@@ -28,8 +28,8 @@
       const scene = new THREE.Scene();
 
       // Add ambient light to the scene
-      const ambientLight = new THREE.AmbientLight(0x404040, 1); // Soft white light
-      scene.add(ambientLight);
+      /*const ambientLight = new THREE.AmbientLight(0x404040, 1); // Soft white light
+      scene.add(ambientLight);*/
 
       // Add directional light to the scene
       const directionalLight = new THREE.DirectionalLight(0xffffff, 1); // White directional light
@@ -40,8 +40,8 @@
       let model;
       // Load GLTF model from external URL.
       const loader = new THREE.GLTFLoader();
-      // https://cdn.jsdelivr.net/gh/gowthamlabs/webxr_ar@webgl_3D_models/3DModel.gltf
-      loader.load('https://immersive-web.github.io/webxr-samples/media/gltf/sunflower/sunflower.gltf',
+      //  https://immersive-web.github.io/webxr-samples/media/gltf/sunflower/sunflower.gltf
+      loader.load('https://cdn.jsdelivr.net/gh/gowthamlabs/webxr_ar@webgl_3D_models/3DModel.gltf',
         (gltf) => {
           model = gltf.scene;
           model.position.set(0, 0, -1);
