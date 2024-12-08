@@ -2,90 +2,90 @@
 <html>
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport"
-        content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
-  <title>Hello WebXR!</title>
+  <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+  <title>AR for Android and iOS</title>
 
-  <!-- three.js -->
+  <!-- Include Three.js -->
   <script src="https://unpkg.com/three@0.126.0/build/three.js"></script>
 </head>
 <body>
+  <h1>Hello AR!</h1>
 
-<!-- Starting an immersive WebXR session requires user interaction.
-    We start this one with a simple button. -->
-<button onclick="activateXR()">Start WebXR</button>
-<script>
-async function activateXR() {
-  const canvas = document.createElement("canvas");
-  document.body.appendChild(canvas);
-  const gl = canvas.getContext("webgl", {xrCompatible: true});
+  <!-- Buttons for AR interaction -->
+  <button id="startAndroidAR" style="display: none;">Start AR (Android)</button>
+  <a id="iosARLink" href="https://developer.apple.com/augmented-reality/quick-look/models/gramophone/gramophone.usdz" rel="ar" style="display: none;">
+    <img src="ar-icon.png" alt="View in AR">
+  </a>
 
-  const scene = new THREE.Scene();
+  <script>
+    async function activateAndroidAR() {
+      // Add a canvas element and initialize a WebGL context that is compatible with WebXR.
+      const canvas = document.createElement("canvas");
+      document.body.appendChild(canvas);
+      const gl = canvas.getContext("webgl", { xrCompatible: true });
 
-  // Set up the WebGLRenderer
-  const renderer = new THREE.WebGLRenderer({
-    alpha: true,
-    canvas: canvas,
-    context: gl
-  });
-  renderer.autoClear = false;
+      const scene = new THREE.Scene();
 
-  // Camera setup
-  const camera = new THREE.PerspectiveCamera();
-  camera.matrixAutoUpdate = false;
+      // Create a colorful cube.
+      const materials = [
+        new THREE.MeshBasicMaterial({ color: 0xff0000 }),
+        new THREE.MeshBasicMaterial({ color: 0x0000ff }),
+        new THREE.MeshBasicMaterial({ color: 0x00ff00 }),
+        new THREE.MeshBasicMaterial({ color: 0xff00ff }),
+        new THREE.MeshBasicMaterial({ color: 0x00ffff }),
+        new THREE.MeshBasicMaterial({ color: 0xffff00 }),
+      ];
 
-  // Load a custom 3D model
-  const loader = new THREE.GLTFLoader();
-  let customModel;
-  loader.load(
-    'path/to/your/model.glb', // Replace with the actual path to your model
-    (gltf) => {
-      customModel = gltf.scene;
-      customModel.position.set(0, 0, -1); // Adjust position
-      customModel.scale.set(0.5, 0.5, 0.5); // Adjust scale if needed
-      scene.add(customModel);
-    },
-    (xhr) => {
-      console.log(`Model ${Math.round((xhr.loaded / xhr.total) * 100)}% loaded`);
-    },
-    (error) => {
-      console.error('An error occurred while loading the model', error);
+      const cube = new THREE.Mesh(new THREE.BoxBufferGeometry(0.2, 0.2, 0.2), materials);
+      cube.position.set(0, 0, -1);
+      scene.add(cube);
+
+      const renderer = new THREE.WebGLRenderer({
+        alpha: true,
+        preserveDrawingBuffer: true,
+        canvas: canvas,
+        context: gl,
+      });
+      renderer.autoClear = false;
+
+      const camera = new THREE.PerspectiveCamera();
+      camera.matrixAutoUpdate = false;
+
+      const session = await navigator.xr.requestSession("immersive-ar");
+      session.updateRenderState({ baseLayer: new XRWebGLLayer(session, gl) });
+
+      const referenceSpace = await session.requestReferenceSpace("local");
+
+      const onXRFrame = (time, frame) => {
+        session.requestAnimationFrame(onXRFrame);
+
+        gl.bindFramebuffer(gl.FRAMEBUFFER, session.renderState.baseLayer.framebuffer);
+
+        const pose = frame.getViewerPose(referenceSpace);
+        if (pose) {
+          const view = pose.views[0];
+          const viewport = session.renderState.baseLayer.getViewport(view);
+          renderer.setSize(viewport.width, viewport.height);
+
+          camera.matrix.fromArray(view.transform.matrix);
+          camera.projectionMatrix.fromArray(view.projectionMatrix);
+          camera.updateMatrixWorld(true);
+
+          renderer.render(scene, camera);
+        }
+      };
+      session.requestAnimationFrame(onXRFrame);
     }
-  );
 
-  // Initialize a WebXR session
-  const session = await navigator.xr.requestSession("immersive-ar");
-  session.updateRenderState({
-    baseLayer: new XRWebGLLayer(session, gl)
-  });
-
-  const referenceSpace = await session.requestReferenceSpace('local');
-
-  const onXRFrame = (time, frame) => {
-    session.requestAnimationFrame(onXRFrame);
-
-    gl.bindFramebuffer(gl.FRAMEBUFFER, session.renderState.baseLayer.framebuffer);
-
-    const pose = frame.getViewerPose(referenceSpace);
-    if (pose) {
-      const view = pose.views[0];
-
-      const viewport = session.renderState.baseLayer.getViewport(view);
-      renderer.setSize(viewport.width, viewport.height);
-
-      camera.matrix.fromArray(view.transform.matrix);
-      camera.projectionMatrix.fromArray(view.projectionMatrix);
-      camera.updateMatrixWorld(true);
-
-      if (customModel) {
-        customModel.updateMatrixWorld(true);
-      }
-
-      renderer.render(scene, camera);
+    // Detect the platform and show appropriate AR option.
+    if (navigator.userAgent.includes('Android')) {
+      document.getElementById('startAndroidAR').style.display = 'block';
+      document.getElementById('startAndroidAR').addEventListener('click', activateAndroidAR);
+    } else if (navigator.userAgent.includes('iPhone') || navigator.userAgent.includes('iPad')) {
+      document.getElementById('iosARLink').style.display = 'block';
+    } else {
+      alert("AR is only supported on Android with Chrome or iOS with Safari.");
     }
-  };
-  session.requestAnimationFrame(onXRFrame);
-}
-</script>
+  </script>
 </body>
 </html>
