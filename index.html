@@ -29,7 +29,7 @@
 
       // Load GLTF model from external URL.
       const loader = new THREE.GLTFLoader();
-      loader.load('https://github.com/gowthamlabs/webxr_ar/blob/webgl_3D_models/3DModel.gltf',
+      loader.load('https://cdn.jsdelivr.net/gh/gowthamlabs/webxr_ar@webgl_3D_models/3DModel.gltf',
         (gltf) => {
           const model = gltf.scene;
           model.position.set(0, 0, -1);
