@@ -3,12 +3,30 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
-  <title>AR for Android and iOS</title>
+  <title>AR Touch Logs</title>
   <script src="https://unpkg.com/three@0.126.0/build/three.js"></script>
   <script src="https://unpkg.com/three@0.126.0/examples/js/loaders/GLTFLoader.js"></script>
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+    }
+    #log {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      color: white;
+      background-color: rgba(0, 0, 0, 0.5);
+      padding: 10px;
+      font-size: 14px;
+      border-radius: 5px;
+      z-index: 10;
+    }
+  </style>
 </head>
 <body>
   <button id="startAndroidAR" style="display: none;">Start AR (Android)</button>
+  <div id="log">Touch interactions will appear here...</div>
   <script>
     async function activateAndroidAR() {
       const canvas = document.createElement("canvas");
@@ -21,6 +39,7 @@
       scene.add(directionalLight);
 
       let model = null;
+      const logElement = document.getElementById("log"); // Access the log element for UI updates
 
       const loader = new THREE.GLTFLoader();
       loader.load(
@@ -31,8 +50,8 @@
           model.scale.set(0.2, 0.2, 0.2);
           scene.add(model);
         },
-        (xhr) => console.log(`${(xhr.loaded / xhr.total) * 100}% loaded`),
-        (error) => console.error('Error loading model:', error)
+        (xhr) => updateLog(`Loading: ${(xhr.loaded / xhr.total) * 100}% complete`),
+        (error) => updateLog(`Error loading model: ${error.message}`)
       );
 
       const renderer = new THREE.WebGLRenderer({ alpha: true, preserveDrawingBuffer: true, canvas, context: gl });
@@ -48,10 +67,18 @@
 
       let initialTouchPosition = null;
       const rotationFactor = 0.01;
+      let isTouched = false;
+      const autoRotationSpeed = 0.01;
+
+      function updateLog(message) {
+        logElement.textContent = message;
+      }
 
       canvas.addEventListener('touchstart', (event) => {
         if (event.touches.length === 1) {
           initialTouchPosition = { x: event.touches[0].clientX, y: event.touches[0].clientY };
+          isTouched = true;
+          updateLog(`Touch started at (${initialTouchPosition.x}, ${initialTouchPosition.y})`);
         }
       });
 
@@ -65,10 +92,15 @@
           model.rotation.x += deltaY * rotationFactor;
 
           initialTouchPosition = currentTouch;
+          updateLog(`Touch moved. ΔX: ${deltaX}, ΔY: ${deltaY}`);
         }
       });
 
-      canvas.addEventListener('touchend', () => (initialTouchPosition = null));
+      canvas.addEventListener('touchend', () => {
+        initialTouchPosition = null;
+        isTouched = false;
+        updateLog("Touch ended");
+      });
 
       const onXRFrame = (time, frame) => {
         session.requestAnimationFrame(onXRFrame);
@@ -85,9 +117,14 @@
           camera.projectionMatrix.fromArray(view.projectionMatrix);
           camera.updateMatrixWorld(true);
 
+          if (model && !isTouched) {
+            model.rotation.y += autoRotationSpeed;
+          }
+
           renderer.render(scene, camera);
         }
       };
+
       session.requestAnimationFrame(onXRFrame);
     }
 
