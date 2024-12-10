@@ -87,6 +87,9 @@
       // Show the log element once the camera is opened
       logElement.style.display = "block";
 
+      // Hide the "Start AR" button once the AR session is started
+      document.getElementById("startAndroidAR").style.display = "none";
+
       canvas.addEventListener("touchstart", (event) => {
         if (event.touches.length === 1) {
           initialTouchPosition = { x: event.touches[0].clientX, y: event.touches[0].clientY };
