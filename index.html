@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
-  <title>AR Touch Logs</title>
+  <title>AR Touch Logs with DOMOverlay</title>
   <script src="https://unpkg.com/three@0.126.0/build/three.js"></script>
   <script src="https://unpkg.com/three@0.126.0/examples/js/loaders/GLTFLoader.js"></script>
   <style>
@@ -12,7 +12,7 @@
       overflow: hidden;
     }
     #log {
-      display: none; /* Hidden by default */
+      display: none; /* Hidden initially */
       position: absolute;
       top: 10px;
       left: 10px;
@@ -28,14 +28,17 @@
 <body>
   <button id="startAndroidAR" style="display: none;">Start AR (Android)</button>
   <div id="log">Touch interactions will appear here...</div>
+
   <script>
     async function activateAndroidAR() {
-      const logElement = document.getElementById("log"); // Access the log element for UI updates
+      const logElement = document.getElementById("log"); // Log overlay element
       const canvas = document.createElement("canvas");
       document.body.appendChild(canvas);
       const gl = canvas.getContext("webgl", { xrCompatible: true });
 
       const scene = new THREE.Scene();
+      const ambientLight = new THREE.AmbientLight(0x404040, 1);
+      scene.add(ambientLight);
       const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
       directionalLight.position.set(10, 15, 10);
       scene.add(directionalLight);
@@ -61,7 +64,13 @@
       const camera = new THREE.PerspectiveCamera();
       camera.matrixAutoUpdate = false;
 
-      const session = await navigator.xr.requestSession("immersive-ar");
+      // Request AR session with DOM Overlay
+      const sessionInit = {
+        requiredFeatures: ["local", "dom-overlay"],
+        domOverlay: { root: document.body }, // Attach DOM overlay to the body
+      };
+
+      const session = await navigator.xr.requestSession("immersive-ar", sessionInit);
       session.updateRenderState({ baseLayer: new XRWebGLLayer(session, gl) });
 
       const referenceSpace = await session.requestReferenceSpace("local");
@@ -78,7 +87,7 @@
       // Show the log element once the camera is opened
       logElement.style.display = "block";
 
-      canvas.addEventListener('touchstart', (event) => {
+      canvas.addEventListener("touchstart", (event) => {
         if (event.touches.length === 1) {
           initialTouchPosition = { x: event.touches[0].clientX, y: event.touches[0].clientY };
           isTouched = true;
@@ -86,7 +95,7 @@
         }
       });
 
-      canvas.addEventListener('touchmove', (event) => {
+      canvas.addEventListener("touchmove", (event) => {
         if (event.touches.length === 1 && initialTouchPosition && model) {
           const currentTouch = { x: event.touches[0].clientX, y: event.touches[0].clientY };
           const deltaX = currentTouch.x - initialTouchPosition.x;
@@ -100,7 +109,7 @@
         }
       });
 
-      canvas.addEventListener('touchend', () => {
+      canvas.addEventListener("touchend", () => {
         initialTouchPosition = null;
         isTouched = false;
         updateLog("Touch ended");
@@ -132,9 +141,9 @@
       session.requestAnimationFrame(onXRFrame);
     }
 
-    if (navigator.userAgent.includes('Android')) {
-      document.getElementById('startAndroidAR').style.display = 'block';
-      document.getElementById('startAndroidAR').addEventListener('click', activateAndroidAR);
+    if (navigator.userAgent.includes("Android")) {
+      document.getElementById("startAndroidAR").style.display = "block";
+      document.getElementById("startAndroidAR").addEventListener("click", activateAndroidAR);
     } else {
       alert("AR is only supported on Android with Chrome.");
     }
