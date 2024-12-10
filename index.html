@@ -18,7 +18,8 @@
         document.body.appendChild(renderer.domElement);
 
         // Add AR button
-        document.body.appendChild(ARButton.createButton(renderer, { requiredFeatures: ['hit-test'] }));
+        const arButton = ARButton.createButton(renderer, { requiredFeatures: ['hit-test'] });
+        document.body.appendChild(arButton);
 
         // Lighting
         const light = new THREE.HemisphereLight(0xffffff, 0xbbbbff, 1);
