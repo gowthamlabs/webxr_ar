@@ -4,44 +4,45 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AR Rotatable Cube</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/150/three.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@three-ts/ar@2.0.0/build/ar.min.js"></script>
+    <script src="https://unpkg.com/three@0.126.0/build/three.js"></script>
+    <script src="https://unpkg.com/three@0.126.0/examples/js/webxr/ARButton.js"></script>
 </head>
 <body style="margin: 0; overflow: hidden;">
-    <button id="ar-button" style="position: absolute; top: 10px; left: 10px; z-index: 10;">Start AR</button>
     <script>
-        // Create a scene, camera, and renderer
+        // Scene, camera, and renderer setup
         const scene = new THREE.Scene();
-        const camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.1, 10);
         const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
         renderer.setSize(window.innerWidth, window.innerHeight);
         renderer.xr.enabled = true;
         document.body.appendChild(renderer.domElement);
 
-        // Add a light to the scene
+        // Add AR button
+        document.body.appendChild(ARButton.createButton(renderer, { requiredFeatures: ['hit-test'] }));
+
+        // Lighting
         const light = new THREE.HemisphereLight(0xffffff, 0xbbbbff, 1);
         scene.add(light);
 
-        // Create a cube
+        // Cube
         const geometry = new THREE.BoxGeometry(0.2, 0.2, 0.2);
         const material = new THREE.MeshStandardMaterial({ color: 0x0077ff });
         const cube = new THREE.Mesh(geometry, material);
         scene.add(cube);
 
-        // Position the cube
+        // Initial cube position
         cube.position.set(0, 0, -1);
 
-        // Variable to track touch interactions
+        // Variables for touch interaction
         let isDragging = false;
         let previousTouch = null;
 
-        // Handle touchstart
+        // Touch event listeners
         renderer.domElement.addEventListener('touchstart', (event) => {
             isDragging = true;
             previousTouch = event.touches[0];
         });
 
-        // Handle touchmove for rotation
         renderer.domElement.addEventListener('touchmove', (event) => {
             if (!isDragging || !previousTouch) return;
 
@@ -55,20 +56,9 @@
             previousTouch = touch;
         });
 
-        // Handle touchend
         renderer.domElement.addEventListener('touchend', () => {
             isDragging = false;
             previousTouch = null;
-        });
-
-        // Add AR Button
-        const arButton = document.getElementById('ar-button');
-        arButton.addEventListener('click', () => {
-            renderer.xr.setSessionType('immersive-ar');
-            navigator.xr.requestSession('immersive-ar').then((session) => {
-                renderer.xr.setSession(session);
-                animate();
-            });
         });
 
         // Animation loop
@@ -77,6 +67,8 @@
                 renderer.render(scene, camera);
             });
         }
+
+        animate();
     </script>
 </body>
 </html>
