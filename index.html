@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
-  <title>AR Touch Logs with DOMOverlay</title>
+  <title>AR Dropdown for Models</title>
   <script src="https://unpkg.com/three@0.126.0/build/three.js"></script>
   <script src="https://unpkg.com/three@0.126.0/examples/js/loaders/GLTFLoader.js"></script>
   <style>
@@ -12,7 +12,7 @@
       overflow: hidden;
     }
     #log {
-      display: none; /* Hidden initially */
+      display: none;
       position: absolute;
       top: 10px;
       left: 10px;
@@ -23,15 +23,26 @@
       border-radius: 5px;
       z-index: 10;
     }
+    #modelSelector {
+      display: none; /* Hidden until camera is loaded */
+      position: absolute;
+      top: 50px;
+      left: 10px;
+      z-index: 10;
+    }
   </style>
 </head>
 <body>
   <button id="startAndroidAR" style="display: none;">Start AR (Android)</button>
   <div id="log">Touch interactions will appear here...</div>
-
+  <select id="modelSelector">
+    <option value="https://cdn.jsdelivr.net/gh/gowthamlabs/webxr_ar@webgl_3D_models/3DModel.gltf">Model 1</option>
+    <option value="https://immersive-web.github.io/webxr-samples/media/gltf/sunflower/sunflower.gltf">Sunflower</option>
+  </select>
   <script>
     async function activateAndroidAR() {
-      const logElement = document.getElementById("log"); // Log overlay element
+      const logElement = document.getElementById("log");
+      const modelSelector = document.getElementById("modelSelector");
       const canvas = document.createElement("canvas");
       document.body.appendChild(canvas);
       const gl = canvas.getContext("webgl", { xrCompatible: true });
@@ -43,31 +54,37 @@
       directionalLight.position.set(10, 15, 10);
       scene.add(directionalLight);
 
-      let model = null;
-
-      const loader = new THREE.GLTFLoader();
-      loader.load(
-        'https://cdn.jsdelivr.net/gh/gowthamlabs/webxr_ar@webgl_3D_models/3DModel.gltf',
-        (gltf) => {
-          model = gltf.scene;
-          model.position.set(0, 0, -2);
-          model.scale.set(0.2, 0.2, 0.2);
-          scene.add(model);
-        },
-        (xhr) => updateLog(`Loading: ${(xhr.loaded / xhr.total) * 100}% complete`),
-        (error) => updateLog(`Error loading model: ${error.message}`)
-      );
-
       const renderer = new THREE.WebGLRenderer({ alpha: true, preserveDrawingBuffer: true, canvas, context: gl });
       renderer.autoClear = false;
 
       const camera = new THREE.PerspectiveCamera();
       camera.matrixAutoUpdate = false;
 
-      // Request AR session with DOM Overlay
+      const loader = new THREE.GLTFLoader();
+      let model = null;
+
+      const loadModel = (url) => {
+        if (model) {
+          scene.remove(model);
+          model = null;
+        }
+        loader.load(
+          url,
+          (gltf) => {
+            model = gltf.scene;
+            model.position.set(0, 0, -2);
+            model.scale.set(0.2, 0.2, 0.2);
+            scene.add(model);
+            updateLog(`Loaded model: ${url}`);
+          },
+          (xhr) => updateLog(`Loading: ${(xhr.loaded / xhr.total) * 100}% complete`),
+          (error) => updateLog(`Error loading model: ${error.message}`)
+        );
+      };
+
       const sessionInit = {
         requiredFeatures: ["local", "dom-overlay"],
-        domOverlay: { root: document.body }, // Attach DOM overlay to the body
+        domOverlay: { root: document.body },
       };
 
       const session = await navigator.xr.requestSession("immersive-ar", sessionInit);
@@ -75,20 +92,28 @@
 
       const referenceSpace = await session.requestReferenceSpace("local");
 
-      let initialTouchPosition = null;
-      const rotationFactor = 0.01;
-      let isTouched = false;
-      const autoRotationSpeed = 0.01;
-
       function updateLog(message) {
         logElement.textContent = message;
       }
 
-      // Show the log element once the camera is opened
+      // Show UI elements after camera is loaded
       logElement.style.display = "block";
-
-      // Hide the "Start AR" button once the AR session is started
+      modelSelector.style.display = "block";
       document.getElementById("startAndroidAR").style.display = "none";
+
+      // Load the default model (first option)
+      loadModel(modelSelector.value);
+
+      // Listen for changes in the dropdown menu to load a new model
+      modelSelector.addEventListener("change", () => {
+        const selectedModel = modelSelector.value;
+        loadModel(selectedModel);
+      });
+
+      let initialTouchPosition = null;
+      const rotationFactor = 0.01;
+      let isTouched = false;
+      const autoRotationSpeed = 0.01;
 
       canvas.addEventListener("touchstart", (event) => {
         if (event.touches.length === 1) {
