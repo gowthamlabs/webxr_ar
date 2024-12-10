@@ -1,75 +1,102 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AR Rotatable Cube</title>
-    <script src="https://unpkg.com/three@0.126.0/build/three.js"></script>
-    <script src="https://unpkg.com/three@0.126.0/examples/js/webxr/ARButton.js"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+  <title>AR for Android and iOS</title>
+  <script src="https://unpkg.com/three@0.126.0/build/three.js"></script>
+  <script src="https://unpkg.com/three@0.126.0/examples/js/loaders/GLTFLoader.js"></script>
 </head>
-<body style="margin: 0; overflow: hidden;">
-    <script>
-        // Scene, camera, and renderer setup
-        const scene = new THREE.Scene();
-        const camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.1, 10);
-        const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-        renderer.setSize(window.innerWidth, window.innerHeight);
-        renderer.xr.enabled = true;
-        document.body.appendChild(renderer.domElement);
+<body>
+  <button id="startAndroidAR" style="display: none;">Start AR (Android)</button>
+  <script>
+    async function activateAndroidAR() {
+      const canvas = document.createElement("canvas");
+      document.body.appendChild(canvas);
+      const gl = canvas.getContext("webgl", { xrCompatible: true });
 
-        // Add AR button
-        const arButton = ARButton.createButton(renderer, { requiredFeatures: ['hit-test'] });
-        document.body.appendChild(arButton);
+      const scene = new THREE.Scene();
+      const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
+      directionalLight.position.set(10, 15, 10);
+      scene.add(directionalLight);
 
-        // Lighting
-        const light = new THREE.HemisphereLight(0xffffff, 0xbbbbff, 1);
-        scene.add(light);
+      let model = null;
 
-        // Cube
-        const geometry = new THREE.BoxGeometry(0.2, 0.2, 0.2);
-        const material = new THREE.MeshStandardMaterial({ color: 0x0077ff });
-        const cube = new THREE.Mesh(geometry, material);
-        scene.add(cube);
+      const loader = new THREE.GLTFLoader();
+      loader.load(
+        'https://cdn.jsdelivr.net/gh/gowthamlabs/webxr_ar@webgl_3D_models/3DModel.gltf',
+        (gltf) => {
+          model = gltf.scene;
+          model.position.set(0, 0, -2);
+          model.scale.set(0.2, 0.2, 0.2);
+          scene.add(model);
+        },
+        (xhr) => console.log(`${(xhr.loaded / xhr.total) * 100}% loaded`),
+        (error) => console.error('Error loading model:', error)
+      );
 
-        // Initial cube position
-        cube.position.set(0, 0, -1);
+      const renderer = new THREE.WebGLRenderer({ alpha: true, preserveDrawingBuffer: true, canvas, context: gl });
+      renderer.autoClear = false;
 
-        // Variables for touch interaction
-        let isDragging = false;
-        let previousTouch = null;
+      const camera = new THREE.PerspectiveCamera();
+      camera.matrixAutoUpdate = false;
 
-        // Touch event listeners
-        renderer.domElement.addEventListener('touchstart', (event) => {
-            isDragging = true;
-            previousTouch = event.touches[0];
-        });
+      const session = await navigator.xr.requestSession("immersive-ar");
+      session.updateRenderState({ baseLayer: new XRWebGLLayer(session, gl) });
 
-        renderer.domElement.addEventListener('touchmove', (event) => {
-            if (!isDragging || !previousTouch) return;
+      const referenceSpace = await session.requestReferenceSpace("local");
 
-            const touch = event.touches[0];
-            const deltaX = touch.clientX - previousTouch.clientX;
-            const deltaY = touch.clientY - previousTouch.clientY;
+      let initialTouchPosition = null;
+      const rotationFactor = 0.01;
 
-            cube.rotation.y += deltaX * 0.01;
-            cube.rotation.x += deltaY * 0.01;
-
-            previousTouch = touch;
-        });
-
-        renderer.domElement.addEventListener('touchend', () => {
-            isDragging = false;
-            previousTouch = null;
-        });
-
-        // Animation loop
-        function animate() {
-            renderer.setAnimationLoop(() => {
-                renderer.render(scene, camera);
-            });
+      canvas.addEventListener('touchstart', (event) => {
+        if (event.touches.length === 1) {
+          initialTouchPosition = { x: event.touches[0].clientX, y: event.touches[0].clientY };
         }
+      });
 
-        animate();
-    </script>
+      canvas.addEventListener('touchmove', (event) => {
+        if (event.touches.length === 1 && initialTouchPosition && model) {
+          const currentTouch = { x: event.touches[0].clientX, y: event.touches[0].clientY };
+          const deltaX = currentTouch.x - initialTouchPosition.x;
+          const deltaY = currentTouch.y - initialTouchPosition.y;
+
+          model.rotation.y += deltaX * rotationFactor;
+          model.rotation.x += deltaY * rotationFactor;
+
+          initialTouchPosition = currentTouch;
+        }
+      });
+
+      canvas.addEventListener('touchend', () => (initialTouchPosition = null));
+
+      const onXRFrame = (time, frame) => {
+        session.requestAnimationFrame(onXRFrame);
+
+        gl.bindFramebuffer(gl.FRAMEBUFFER, session.renderState.baseLayer.framebuffer);
+
+        const pose = frame.getViewerPose(referenceSpace);
+        if (pose) {
+          const view = pose.views[0];
+          const viewport = session.renderState.baseLayer.getViewport(view);
+          renderer.setSize(viewport.width, viewport.height);
+
+          camera.matrix.fromArray(view.transform.matrix);
+          camera.projectionMatrix.fromArray(view.projectionMatrix);
+          camera.updateMatrixWorld(true);
+
+          renderer.render(scene, camera);
+        }
+      };
+      session.requestAnimationFrame(onXRFrame);
+    }
+
+    if (navigator.userAgent.includes('Android')) {
+      document.getElementById('startAndroidAR').style.display = 'block';
+      document.getElementById('startAndroidAR').addEventListener('click', activateAndroidAR);
+    } else {
+      alert("AR is only supported on Android with Chrome.");
+    }
+  </script>
 </body>
 </html>
