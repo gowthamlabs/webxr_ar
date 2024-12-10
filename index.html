@@ -1,105 +1,82 @@
-<!doctype html>
-<html>
+<!DOCTYPE html>
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
-  <title>WebXR with iOS Fallback</title>
-
-  <!-- Include Three.js -->
-  <script src="https://unpkg.com/three@0.126.0/build/three.js"></script>
-
-  <!-- Include WebXR Polyfill -->
-  <script src="https://unpkg.com/webxr-polyfill/build/webxr-polyfill.min.js"></script>
-
-  <!-- Include model-viewer for iOS fallback -->
-  <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AR Rotatable Cube</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/150/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@three-ts/ar@2.0.0/build/ar.min.js"></script>
 </head>
-<body>
-  <h1>Hello AR!</h1>
+<body style="margin: 0; overflow: hidden;">
+    <button id="ar-button" style="position: absolute; top: 10px; left: 10px; z-index: 10;">Start AR</button>
+    <script>
+        // Create a scene, camera, and renderer
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.xr.enabled = true;
+        document.body.appendChild(renderer.domElement);
 
-  <!-- Button for starting WebXR -->
-  <button id="startXR" onclick="activateXR()">Start WebXR</button>
+        // Add a light to the scene
+        const light = new THREE.HemisphereLight(0xffffff, 0xbbbbff, 1);
+        scene.add(light);
 
-  <!-- Fallback for iOS -->
-  <div id="iosFallback" style="display: none;">
-    <h2>Your device does not support WebXR. Try this AR object:</h2>
-    <!-- <model-viewer src="path-to-3d-model.glb" ar ar-modes="scene-viewer quick-look" camera-controls auto-rotate style="width: 100%; height: 400px;">
-    </model-viewer> -->
-  </div>
+        // Create a cube
+        const geometry = new THREE.BoxGeometry(0.2, 0.2, 0.2);
+        const material = new THREE.MeshStandardMaterial({ color: 0x0077ff });
+        const cube = new THREE.Mesh(geometry, material);
+        scene.add(cube);
 
-  <script>
-    async function activateXR() {
-      // Check for WebXR support
-      if (!navigator.xr || !navigator.xr.isSessionSupported) {
-        document.getElementById('iosFallback').style.display = 'block';
-        console.warn("WebXR is not supported. Using iOS fallback.");
-        return;
-      }
+        // Position the cube
+        cube.position.set(0, 0, -1);
 
-      // Check if "immersive-ar" is supported
-      const isARSupported = await navigator.xr.isSessionSupported("immersive-ar");
-      if (!isARSupported) {
-        document.getElementById('iosFallback').style.display = 'block';
-        console.warn("Immersive AR is not supported. Using iOS fallback.");
-        return;
-      }
+        // Variable to track touch interactions
+        let isDragging = false;
+        let previousTouch = null;
 
-      // WebXR code for AR
-      const canvas = document.createElement("canvas");
-      document.body.appendChild(canvas);
-      const gl = canvas.getContext("webgl", { xrCompatible: true });
+        // Handle touchstart
+        renderer.domElement.addEventListener('touchstart', (event) => {
+            isDragging = true;
+            previousTouch = event.touches[0];
+        });
 
-      const scene = new THREE.Scene();
-      const materials = [
-        new THREE.MeshBasicMaterial({ color: 0xff0000 }),
-        new THREE.MeshBasicMaterial({ color: 0x0000ff }),
-        new THREE.MeshBasicMaterial({ color: 0x00ff00 }),
-        new THREE.MeshBasicMaterial({ color: 0xff00ff }),
-        new THREE.MeshBasicMaterial({ color: 0x00ffff }),
-        new THREE.MeshBasicMaterial({ color: 0xffff00 }),
-      ];
-      const cube = new THREE.Mesh(new THREE.BoxBufferGeometry(0.2, 0.2, 0.2), materials);
-      cube.position.set(0, 0, -1);
-      scene.add(cube);
+        // Handle touchmove for rotation
+        renderer.domElement.addEventListener('touchmove', (event) => {
+            if (!isDragging || !previousTouch) return;
 
-      const renderer = new THREE.WebGLRenderer({
-        alpha: true,
-        preserveDrawingBuffer: true,
-        canvas: canvas,
-        context: gl,
-      });
-      renderer.autoClear = false;
+            const touch = event.touches[0];
+            const deltaX = touch.clientX - previousTouch.clientX;
+            const deltaY = touch.clientY - previousTouch.clientY;
 
-      const camera = new THREE.PerspectiveCamera();
-      camera.matrixAutoUpdate = false;
+            cube.rotation.y += deltaX * 0.01;
+            cube.rotation.x += deltaY * 0.01;
 
-      const session = await navigator.xr.requestSession("immersive-ar");
-      session.updateRenderState({
-        baseLayer: new XRWebGLLayer(session, gl),
-      });
+            previousTouch = touch;
+        });
 
-      const referenceSpace = await session.requestReferenceSpace("local");
+        // Handle touchend
+        renderer.domElement.addEventListener('touchend', () => {
+            isDragging = false;
+            previousTouch = null;
+        });
 
-      const onXRFrame = (time, frame) => {
-        session.requestAnimationFrame(onXRFrame);
+        // Add AR Button
+        const arButton = document.getElementById('ar-button');
+        arButton.addEventListener('click', () => {
+            renderer.xr.setSessionType('immersive-ar');
+            navigator.xr.requestSession('immersive-ar').then((session) => {
+                renderer.xr.setSession(session);
+                animate();
+            });
+        });
 
-        gl.bindFramebuffer(gl.FRAMEBUFFER, session.renderState.baseLayer.framebuffer);
-
-        const pose = frame.getViewerPose(referenceSpace);
-        if (pose) {
-          const view = pose.views[0];
-          const viewport = session.renderState.baseLayer.getViewport(view);
-          renderer.setSize(viewport.width, viewport.height);
-
-          camera.matrix.fromArray(view.transform.matrix);
-          camera.projectionMatrix.fromArray(view.projectionMatrix);
-          camera.updateMatrixWorld(true);
-
-          renderer.render(scene, camera);
+        // Animation loop
+        function animate() {
+            renderer.setAnimationLoop(() => {
+                renderer.render(scene, camera);
+            });
         }
-      };
-      session.requestAnimationFrame(onXRFrame);
-    }
-  </script>
+    </script>
 </body>
 </html>
