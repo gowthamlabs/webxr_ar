@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
-  <title>AR Dropdown for Models</title>
+  <title>AR Dropdown for Models with Pinch Zoom</title>
   <script src="https://unpkg.com/three@0.126.0/build/three.js"></script>
   <script src="https://unpkg.com/three@0.126.0/examples/js/loaders/GLTFLoader.js"></script>
   <style>
@@ -24,7 +24,7 @@
       z-index: 10;
     }
     #modelSelector {
-      display: none; /* Hidden until camera is loaded */
+      display: none;
       position: absolute;
       top: 50px;
       left: 10px;
@@ -111,7 +111,9 @@
       });
 
       let initialTouchPosition = null;
+      let initialPinchDistance = null;
       const rotationFactor = 0.01;
+      const zoomFactor = 0.005;
       let isTouched = false;
       const autoRotationSpeed = 0.01;
 
@@ -120,6 +122,11 @@
           initialTouchPosition = { x: event.touches[0].clientX, y: event.touches[0].clientY };
           isTouched = true;
           updateLog(`Touch started at (${initialTouchPosition.x}, ${initialTouchPosition.y})`);
+        } else if (event.touches.length === 2) {
+          const dx = event.touches[0].clientX - event.touches[1].clientX;
+          const dy = event.touches[0].clientY - event.touches[1].clientY;
+          initialPinchDistance = Math.sqrt(dx * dx + dy * dy);
+          updateLog("Pinch started");
         }
       });
 
@@ -134,11 +141,21 @@
 
           initialTouchPosition = currentTouch;
           updateLog(`Touch moved. ΔX: ${deltaX}, ΔY: ${deltaY}`);
+        } else if (event.touches.length === 2 && initialPinchDistance && model) {
+          const dx = event.touches[0].clientX - event.touches[1].clientX;
+          const dy = event.touches[0].clientY - event.touches[1].clientY;
+          const currentPinchDistance = Math.sqrt(dx * dx + dy * dy);
+
+          const scaleChange = (currentPinchDistance - initialPinchDistance) * zoomFactor;
+          model.scale.multiplyScalar(1 + scaleChange);
+          initialPinchDistance = currentPinchDistance;
+          updateLog(`Pinch zoom. Scale: ${model.scale.x.toFixed(2)}`);
         }
       });
 
       canvas.addEventListener("touchend", () => {
         initialTouchPosition = null;
+        initialPinchDistance = null;
         isTouched = false;
         updateLog("Touch ended");
       });
