@@ -59,13 +59,13 @@
       scene.add(directionalLight);
 
       // Stronger light from the left
-      const leftLight = new THREE.DirectionalLight(0xffffff, 6); // Intensity increased to 2.5
+      const leftLight = new THREE.DirectionalLight(0xffffff, 2); // Intensity increased to 2.5
       leftLight.position.set(-10, 10, 0); // Positioned to the left
       leftLight.castShadow = true;
       scene.add(leftLight);
 
       // Stronger light from behind
-      const backLight = new THREE.DirectionalLight(0xffffff, 6); // Intensity increased to 2.5
+      const backLight = new THREE.DirectionalLight(0xffffff, 2); // Intensity increased to 2.5
       backLight.position.set(0, 10, 10); // Positioned behind
       backLight.castShadow = true;
       scene.add(backLight);
