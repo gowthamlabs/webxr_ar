@@ -73,6 +73,22 @@
       const loader = new THREE.GLTFLoader();
       let model = null;
 
+       let reticle = null;
+
+      // Load the GLTF-based reticle
+      loader.load(
+        "https://immersive-web.github.io/webxr-samples/media/gltf/reticle/reticle.gltf",
+        function (gltf) {
+          reticle = gltf.scene;
+          reticle.visible = false; // Initially hidden
+          scene.add(reticle);
+        },
+        undefined,
+        function (error) {
+          console.error("Error loading reticle:", error);
+        }
+      );
+
       const loadModel = (url) => {
         if (model) {
           scene.remove(model);
@@ -93,7 +109,7 @@
       };
 
       const sessionInit = {
-        requiredFeatures: ["local", "dom-overlay"],
+        requiredFeatures: ["local", "hit-test", "dom-overlay"],
         domOverlay: { root: document.body },
       };
 
@@ -101,6 +117,8 @@
       session.updateRenderState({ baseLayer: new XRWebGLLayer(session, gl) });
 
       const referenceSpace = await session.requestReferenceSpace("local");
+      const viewerSpace = await session.requestReferenceSpace("viewer");
+      const hitTestSource = await session.requestHitTestSource({ space: viewerSpace });
 
       function updateLog(message) {
         logElement.textContent = message;
@@ -119,6 +137,15 @@
         const selectedModel = modelSelector.value;
         loadModel(selectedModel);
       });
+
+      canvas.addEventListener("click", () => {
+        if (reticle && reticle.visible && model) {
+          model.position.copy(reticle.position);
+          model.visible = true; // Show model when placed
+          updateLog("Model placed!");
+        }
+      });
+
 
       let initialTouchPosition = null;
       let initialPinchDistance = null;
@@ -184,6 +211,17 @@
           camera.matrix.fromArray(view.transform.matrix);
           camera.projectionMatrix.fromArray(view.projectionMatrix);
           camera.updateMatrixWorld(true);
+
+          // Perform hit test to update reticle position
+          const hitTestResults = frame.getHitTestResults(hitTestSource);
+          if (hitTestResults.length > 0 && reticle) {
+            const hit = hitTestResults[0];
+            const hitMatrix = new THREE.Matrix4().fromArray(hit.getPose(referenceSpace).transform.matrix);
+            reticle.position.setFromMatrixPosition(hitMatrix);
+            reticle.visible = true;
+          } else if (reticle) {
+            reticle.visible = false;
+          }
 
           if (model && !isTouched) {
             model.rotation.y += autoRotationSpeed;
