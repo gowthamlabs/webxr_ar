@@ -48,7 +48,7 @@
       // Stronger light from behind
       const backLight = new THREE.DirectionalLight(0xffffff, 2.5); // High intensity for back light
       backLight.position.set(0, 10, 10); // Positioned behind
-      scene.add(backLight);
+      scene.add(backLight);*/
 
       // Additional spotlight from the left for focused illumination
       const leftSpotLight = new THREE.SpotLight(0xffffff, 1.5); // Additional left spotlight
@@ -63,7 +63,6 @@
       backSpotLight.target.position.set(0, 0, -2); // Focused on the model
       scene.add(backSpotLight);
       scene.add(backSpotLight.target);
-      */
 
       const renderer = new THREE.WebGLRenderer({ alpha: true, preserveDrawingBuffer: true, canvas, context: gl });
       renderer.autoClear = false;
