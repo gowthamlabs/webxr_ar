@@ -6,31 +6,7 @@
   <title>AR Dropdown for Models with Pinch Zoom</title>
   <script src="https://unpkg.com/three@0.126.0/build/three.js"></script>
   <script src="https://unpkg.com/three@0.126.0/examples/js/loaders/GLTFLoader.js"></script>
-  <style>
-    body {
-      margin: 0;
-      overflow: hidden;
-    }
-    #log {
-      display: none;
-      position: absolute;
-      top: 10px;
-      left: 10px;
-      color: white;
-      background-color: rgba(0, 0, 0, 0.5);
-      padding: 10px;
-      font-size: 14px;
-      border-radius: 5px;
-      z-index: 10;
-    }
-    #modelSelector {
-      display: none;
-      position: absolute;
-      top: 50px;
-      left: 10px;
-      z-index: 10;
-    }
-  </style>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <button id="startAndroidAR" style="display: none;">Start AR (Android)</button>
@@ -43,6 +19,7 @@
     async function activateAndroidAR() {
       const logElement = document.getElementById("log");
       const modelSelector = document.getElementById("modelSelector");
+      const startButton = document.getElementById("startAndroidAR");
       const canvas = document.createElement("canvas");
       document.body.appendChild(canvas);
       const gl = canvas.getContext("webgl", { xrCompatible: true });
@@ -57,7 +34,7 @@
       const topLight = new THREE.DirectionalLight(0xffffff, 0.6); // Reduced intensity from 0.8 to 0.6
       topLight.position.set(0, 10, 0); // Positioned directly above
       scene.add(topLight);
-
+      /*
       // Directional light from the right (reduced intensity)
       const rightLight = new THREE.DirectionalLight(0xffffff, 0.5); // Reduced intensity for right light
       rightLight.position.set(10, 5, 5); // Positioned to the right
@@ -86,6 +63,7 @@
       backSpotLight.target.position.set(0, 0, -2); // Focused on the model
       scene.add(backSpotLight);
       scene.add(backSpotLight.target);
+      */
 
       const renderer = new THREE.WebGLRenderer({ alpha: true, preserveDrawingBuffer: true, canvas, context: gl });
       renderer.autoClear = false;
@@ -132,7 +110,7 @@
       // Show UI elements after camera is loaded
       logElement.style.display = "block";
       modelSelector.style.display = "block";
-      document.getElementById("startAndroidAR").style.display = "none";
+      startButton.style.display = "none";
 
       // Load the default model (first option)
       loadModel(modelSelector.value);
