@@ -48,22 +48,26 @@
       const gl = canvas.getContext("webgl", { xrCompatible: true });
 
       const scene = new THREE.Scene();
-      const ambientLight = new THREE.AmbientLight(0x404040, 1);
+      
+      // Ambient light for base illumination
+      const ambientLight = new THREE.AmbientLight(0x404040, 1.5); // Slightly brighter ambient light
       scene.add(ambientLight);
 
-      // Add directional light from above
-      const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
+      // Main directional light from above
+      const directionalLight = new THREE.DirectionalLight(0xffffff, 1.2);
       directionalLight.position.set(10, 15, 10);
       scene.add(directionalLight);
-      
-      // Add directional light from the left
-      const leftLight = new THREE.DirectionalLight(0xffffff, 0.8);
-      leftLight.position.set(-10, 10, 0); // Positioned to the left of the model
+
+      // Stronger light from the left
+      const leftLight = new THREE.DirectionalLight(0xffffff, 2.5); // Intensity increased to 2.5
+      leftLight.position.set(-10, 10, 0); // Positioned to the left
+      leftLight.castShadow = true;
       scene.add(leftLight);
 
-      // Add directional light from behind
-      const backLight = new THREE.DirectionalLight(0xffffff, 0.8);
-      backLight.position.set(0, 10, 10); // Positioned behind the model
+      // Stronger light from behind
+      const backLight = new THREE.DirectionalLight(0xffffff, 2.5); // Intensity increased to 2.5
+      backLight.position.set(0, 10, 10); // Positioned behind
+      backLight.castShadow = true;
       scene.add(backLight);
 
       const renderer = new THREE.WebGLRenderer({ alpha: true, preserveDrawingBuffer: true, canvas, context: gl });
