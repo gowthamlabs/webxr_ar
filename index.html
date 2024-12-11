@@ -132,7 +132,8 @@
       // Show UI elements after camera is loaded
       logElement.style.display = "block";
       modelSelector.style.display = "block";
-      document.getElementById("startAndroidAR").style.display = "none";
+      // document.getElementById("startAndroidAR").style.display = "none";
+      startButton.style.display = "none";
 
       // Load the default model (first option)
       loadModel(modelSelector.value);
@@ -215,6 +216,14 @@
           renderer.render(scene, camera);
         }
       };
+
+      // Handle AR session end
+      session.addEventListener("end", () => {
+        updateLog(""); // Clear log content
+        logElement.style.display = "none"; // Hide log
+        modelSelector.style.display = "none"; // Hide dropdown
+        startButton.style.display = "block"; // Show Start AR button
+      });
 
       session.requestAnimationFrame(onXRFrame);
     }
