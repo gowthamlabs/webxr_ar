@@ -53,24 +53,27 @@
       const ambientLight = new THREE.AmbientLight(0x404040, 1.2); // Slightly brighter ambient light
       scene.add(ambientLight);
 
-      // Main directional light from above
-      const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
-      directionalLight.position.set(5, 10, 5);
-      scene.add(directionalLight);
+      // Directional light from the top (reduced intensity)
+      const topLight = new THREE.DirectionalLight(0xffffff, 0.6); // Reduced intensity from 0.8 to 0.6
+      topLight.position.set(0, 10, 0); // Positioned directly above
+      scene.add(topLight);
+
+      // Directional light from the right (reduced intensity)
+      const rightLight = new THREE.DirectionalLight(0xffffff, 0.5); // Reduced intensity for right light
+      rightLight.position.set(10, 5, 5); // Positioned to the right
+      scene.add(rightLight);
 
       // Stronger light from the left
-      const leftLight = new THREE.DirectionalLight(0xffffff, 2); // Intensity increased to 2.5
+      const leftLight = new THREE.DirectionalLight(0xffffff, 2.5); // High intensity for left light
       leftLight.position.set(-10, 10, 0); // Positioned to the left
-      leftLight.castShadow = true;
       scene.add(leftLight);
 
       // Stronger light from behind
-      const backLight = new THREE.DirectionalLight(0xffffff, 2); // Intensity increased to 2.5
+      const backLight = new THREE.DirectionalLight(0xffffff, 2.5); // High intensity for back light
       backLight.position.set(0, 10, 10); // Positioned behind
-      backLight.castShadow = true;
       scene.add(backLight);
 
-       // Additional spotlight from the left for focused illumination
+      // Additional spotlight from the left for focused illumination
       const leftSpotLight = new THREE.SpotLight(0xffffff, 1.5); // Additional left spotlight
       leftSpotLight.position.set(-10, 15, -5); // Positioned diagonally from the left
       leftSpotLight.target.position.set(0, 0, -2); // Focused on the model
