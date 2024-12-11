@@ -98,6 +98,7 @@
           url,
           (gltf) => {
             model = gltf.scene;
+            model.visible = false; // Initially hidden
             model.position.set(0, 0, -2);
             model.scale.set(0.2, 0.2, 0.2);
             scene.add(model);
