@@ -12752,115 +12752,115 @@
   ],
   "images": [
     {
-      "uri": "textures/EXT_Tyre_baseColor.png"
+      "uri": "audi_r8_textures/EXT_Tyre_baseColor.png"
     },
     {
-      "uri": "textures/EXT_Tyre_normal.png"
+      "uri": "audi_r8_textures/EXT_Tyre_normal.png"
     },
     {
-      "uri": "textures/RIM_LOGO_baseColor.png"
+      "uri": "audi_r8_textures/RIM_LOGO_baseColor.png"
     },
     {
-      "uri": "textures/EXT_Rim_normal.png"
+      "uri": "audi_r8_textures/EXT_Rim_normal.png"
     },
     {
-      "uri": "textures/EXT_Brakedisc_normal.png"
+      "uri": "audi_r8_textures/EXT_Brakedisc_normal.png"
     },
     {
-      "uri": "textures/INT_DETAILS_TEXT_baseColor.png"
+      "uri": "audi_r8_textures/INT_DETAILS_TEXT_baseColor.png"
     },
     {
-      "uri": "textures/INT_DETAILS_TEXT_normal.png"
+      "uri": "audi_r8_textures/INT_DETAILS_TEXT_normal.png"
     },
     {
-      "uri": "textures/material_0_normal.png"
+      "uri": "audi_r8_textures/material_0_normal.png"
     },
     {
-      "uri": "textures/EXT_mirror_baseColor.png"
+      "uri": "audi_r8_textures/EXT_mirror_baseColor.png"
     },
     {
-      "uri": "textures/EXT_Car_Paint_baseColor.png"
+      "uri": "audi_r8_textures/EXT_Car_Paint_baseColor.png"
     },
     {
-      "uri": "textures/material_1_baseColor.jpeg"
+      "uri": "audi_r8_textures/material_1_baseColor.jpeg"
     },
     {
-      "uri": "textures/EXT_Wipers_baseColor.png"
+      "uri": "audi_r8_textures/EXT_Wipers_baseColor.png"
     },
     {
-      "uri": "textures/EXT_Details1_baseColor.png"
+      "uri": "audi_r8_textures/EXT_Details1_baseColor.png"
     },
     {
-      "uri": "textures/EXT_Details1_normal.png"
+      "uri": "audi_r8_textures/EXT_Details1_normal.png"
     },
     {
-      "uri": "textures/EXT_Lights_baseColor.png"
+      "uri": "audi_r8_textures/EXT_Lights_baseColor.png"
     },
     {
-      "uri": "textures/EXT_Lights_normal.png"
+      "uri": "audi_r8_textures/EXT_Lights_normal.png"
     },
     {
-      "uri": "textures/EXT_Details1_crome_baseColor.png"
+      "uri": "audi_r8_textures/EXT_Details1_crome_baseColor.png"
     },
     {
-      "uri": "textures/EXT_detail2_baseColor.png"
+      "uri": "audi_r8_textures/EXT_detail2_baseColor.png"
     },
     {
-      "uri": "textures/EXT_detail2_normal.png"
+      "uri": "audi_r8_textures/EXT_detail2_normal.png"
     },
     {
-      "uri": "textures/EXT_Grid_baseColor.png"
+      "uri": "audi_r8_textures/EXT_Grid_baseColor.png"
     },
     {
-      "uri": "textures/EXT_Grid_normal.png"
+      "uri": "audi_r8_textures/EXT_Grid_normal.png"
     },
     {
-      "uri": "textures/EXT_Carbon_baseColor.png"
+      "uri": "audi_r8_textures/EXT_Carbon_baseColor.png"
     },
     {
-      "uri": "textures/EXT_grid3_baseColor.png"
+      "uri": "audi_r8_textures/EXT_grid3_baseColor.png"
     },
     {
-      "uri": "textures/INT_LEDS_normal.png"
+      "uri": "audi_r8_textures/INT_LEDS_normal.png"
     },
     {
-      "uri": "textures/INT_LCD_baseColor.png"
+      "uri": "audi_r8_textures/INT_LCD_baseColor.png"
     },
     {
-      "uri": "textures/INT_Cable_normal.png"
+      "uri": "audi_r8_textures/INT_Cable_normal.png"
     },
     {
-      "uri": "textures/INT_CARBON3_baseColor.png"
+      "uri": "audi_r8_textures/INT_CARBON3_baseColor.png"
     },
     {
-      "uri": "textures/INT_RUBBER_baseColor.png"
+      "uri": "audi_r8_textures/INT_RUBBER_baseColor.png"
     },
     {
-      "uri": "textures/INT_CARBON2_baseColor.png"
+      "uri": "audi_r8_textures/INT_CARBON2_baseColor.png"
     },
     {
-      "uri": "textures/INT_PLASTIC_WHITE_baseColor.png"
+      "uri": "audi_r8_textures/INT_PLASTIC_WHITE_baseColor.png"
     },
     {
-      "uri": "textures/INT_CARPET_DARK_SEAT_baseColor.png"
+      "uri": "audi_r8_textures/INT_CARPET_DARK_SEAT_baseColor.png"
     },
     {
-      "uri": "textures/INT_CINTURA_baseColor.png"
+      "uri": "audi_r8_textures/INT_CINTURA_baseColor.png"
     },
     {
-      "uri": "textures/INT_CINTURA_normal.png"
+      "uri": "audi_r8_textures/INT_CINTURA_normal.png"
     },
     {
-      "uri": "textures/EXT_Caliper_base_baseColor.png"
+      "uri": "audi_r8_textures/EXT_Caliper_base_baseColor.png"
     },
     {
-      "uri": "textures/EXT_Caliper_base_normal.png"
+      "uri": "audi_r8_textures/EXT_Caliper_base_normal.png"
     },
     {
-      "uri": "textures/EXT_Grid2_baseColor.png"
+      "uri": "audi_r8_textures/EXT_Grid2_baseColor.png"
     },
     {
-      "uri": "textures/EXT_Grid2_normal.png"
+      "uri": "audi_r8_textures/EXT_Grid2_normal.png"
     }
   ],
   "materials": [
