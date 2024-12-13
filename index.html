@@ -10,10 +10,13 @@
 </head>
 <body>
   <button id="startAndroidAR" style="display: none;">Start AR (Android)</button>
-  <div id="log">Touch interactions will appear here...</div>
+  <a id="iosARLink" href="https://cdn.jsdelivr.net/gh/gowthamlabs/webxr_ar@webgl_3D_models/concept_car.usdz" rel="ar" style="display: none;">
+    <img src="ar-icon.png" alt="View in AR">
+  </a>
+  <!-- <div id="log">Touch interactions will appear here...</div> -->
   <select id="modelSelector">
-    <option value="https://cdn.jsdelivr.net/gh/gowthamlabs/webxr_ar@webgl_3D_models/3DModel.gltf">Model 1</option>
-    <option value="https://immersive-web.github.io/webxr-samples/media/gltf/sunflower/sunflower.gltf">Sunflower</option>
+    <option value="https://cdn.jsdelivr.net/gh/gowthamlabs/webxr_ar@webgl_3D_models/concept_car_scene.gltf">Concept Car</option>
+    <option value="https://cdn.jsdelivr.net/gh/gowthamlabs/webxr_ar@webgl_3D_models/audi_r8_scene.gltf">Audi R8</option>
   </select>
   <script>
     async function activateAndroidAR() {
@@ -122,11 +125,11 @@
       const hitTestSource = await session.requestHitTestSource({ space: viewerSpace });
 
       function updateLog(message) {
-        logElement.textContent = message;
+        // logElement.textContent = message; 
       }
 
       // Show UI elements after camera is loaded
-      logElement.style.display = "block";
+      // logElement.style.display = "block";
       modelSelector.style.display = "block";
       startButton.style.display = "none";
 
@@ -235,7 +238,7 @@
       // Handle AR session end
       session.addEventListener("end", () => {
         updateLog(""); // Clear log content
-        logElement.style.display = "none"; // Hide log
+        // logElement.style.display = "none"; // Hide log
         modelSelector.style.display = "none"; // Hide dropdown
         startButton.style.display = "block"; // Show Start AR button
       });
@@ -246,6 +249,8 @@
     if (navigator.userAgent.includes("Android")) {
       document.getElementById("startAndroidAR").style.display = "block";
       document.getElementById("startAndroidAR").addEventListener("click", activateAndroidAR);
+    } else if (navigator.userAgent.includes('iPhone') || navigator.userAgent.includes('iPad')) {
+      document.getElementById('iosARLink').style.display = 'block';
     } else {
       alert("AR is only supported on Android with Chrome.");
     }
