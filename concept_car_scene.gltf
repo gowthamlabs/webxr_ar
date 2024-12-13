@@ -35167,7 +35167,7 @@
   "buffers": [
     {
       "byteLength": 20061144,
-      "uri": "scene.bin"
+      "uri": "concept_car_scene.bin"
     }
   ],
   "extensionsUsed": [
@@ -35177,22 +35177,22 @@
   ],
   "images": [
     {
-      "uri": "textures/Material.008_baseColor.png"
+      "uri": "concept_car_textures/Material.008_baseColor.png"
     },
     {
-      "uri": "textures/bolt_metal_threads_normal.png"
+      "uri": "concept_car_textures/bolt_metal_threads_normal.png"
     },
     {
-      "uri": "textures/pattern_4.001_normal.png"
+      "uri": "concept_car_textures/pattern_4.001_normal.png"
     },
     {
-      "uri": "textures/grill.001_baseColor.png"
+      "uri": "concept_car_textures/grill.001_baseColor.png"
     },
     {
-      "uri": "textures/grill.001_normal.png"
+      "uri": "concept_car_textures/grill.001_normal.png"
     },
     {
-      "uri": "textures/rubber_tires_normal.png"
+      "uri": "concept_car_textures/rubber_tires_normal.png"
     }
   ],
   "materials": [
