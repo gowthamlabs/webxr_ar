@@ -16502,7 +16502,7 @@
   "buffers": [
     {
       "byteLength": 15136788,
-      "uri": "scene.bin"
+      "uri": "maserati_scene.bin"
     }
   ],
   "extensionsUsed": [
@@ -16512,163 +16512,163 @@
   ],
   "images": [
     {
-      "uri": "textures/EXT_underside.5_baseColor.png"
+      "uri": "maserati_textures/EXT_underside.5_baseColor.png"
     },
     {
-      "uri": "textures/EXT_underside.5_normal.png"
+      "uri": "maserati_textures/EXT_underside.5_normal.png"
     },
     {
-      "uri": "textures/INT_display_baseColor.png"
+      "uri": "maserati_textures/INT_display_baseColor.png"
     },
     {
-      "uri": "textures/INT_decals.3_baseColor.png"
+      "uri": "maserati_textures/INT_decals.3_baseColor.png"
     },
     {
-      "uri": "textures/INT_plastic_nodet.1_baseColor.png"
+      "uri": "maserati_textures/INT_plastic_nodet.1_baseColor.png"
     },
     {
-      "uri": "textures/INT_logo_baseColor.png"
+      "uri": "maserati_textures/INT_logo_baseColor.png"
     },
     {
-      "uri": "textures/INT_logo_normal.png"
+      "uri": "maserati_textures/INT_logo_normal.png"
     },
     {
-      "uri": "textures/INT_plastic_nodet.1_0_baseColor.png"
+      "uri": "maserati_textures/INT_plastic_nodet.1_0_baseColor.png"
     },
     {
-      "uri": "textures/INT_plastic_nodet.1_0_normal.png"
+      "uri": "maserati_textures/INT_plastic_nodet.1_0_normal.png"
     },
     {
-      "uri": "textures/INT_seam_baseColor.png"
+      "uri": "maserati_textures/INT_seam_baseColor.png"
     },
     {
-      "uri": "textures/INT_seam_normal.png"
+      "uri": "maserati_textures/INT_seam_normal.png"
     },
     {
-      "uri": "textures/INT_belts_baseColor.png"
+      "uri": "maserati_textures/INT_belts_baseColor.png"
     },
     {
-      "uri": "textures/INT_belts_normal.png"
+      "uri": "maserati_textures/INT_belts_normal.png"
     },
     {
-      "uri": "textures/EXT_chrome_baseColor.png"
+      "uri": "maserati_textures/EXT_chrome_baseColor.png"
     },
     {
-      "uri": "textures/EXT_chrome_normal.png"
+      "uri": "maserati_textures/EXT_chrome_normal.png"
     },
     {
-      "uri": "textures/EXT_underside.5_0_baseColor.png"
+      "uri": "maserati_textures/EXT_underside.5_0_baseColor.png"
     },
     {
-      "uri": "textures/EXT_underside.5_0_normal.png"
+      "uri": "maserati_textures/EXT_underside.5_0_normal.png"
     },
     {
-      "uri": "textures/INT_logo_steer_baseColor.png"
+      "uri": "maserati_textures/INT_logo_steer_baseColor.png"
     },
     {
-      "uri": "textures/INT_plastic_nodet_red_baseColor.png"
+      "uri": "maserati_textures/INT_plastic_nodet_red_baseColor.png"
     },
     {
-      "uri": "textures/EXT_tyre.1_baseColor.png"
+      "uri": "maserati_textures/EXT_tyre.1_baseColor.png"
     },
     {
-      "uri": "textures/INT_carpet_baseColor.png"
+      "uri": "maserati_textures/INT_carpet_baseColor.png"
     },
     {
-      "uri": "textures/INT_alcnt_baseColor.png"
+      "uri": "maserati_textures/INT_alcnt_baseColor.png"
     },
     {
-      "uri": "textures/INT_plastic.2_baseColor.png"
+      "uri": "maserati_textures/INT_plastic.2_baseColor.png"
     },
     {
-      "uri": "textures/INT_plastic.2_0_baseColor.png"
+      "uri": "maserati_textures/INT_plastic.2_0_baseColor.png"
     },
     {
-      "uri": "textures/INT_carbon.2_baseColor.png"
+      "uri": "maserati_textures/INT_carbon.2_baseColor.png"
     },
     {
-      "uri": "textures/INT_logo_steer_0_normal.png"
+      "uri": "maserati_textures/INT_logo_steer_0_normal.png"
     },
     {
-      "uri": "textures/INT_leather2_wheel_baseColor.png"
+      "uri": "maserati_textures/INT_leather2_wheel_baseColor.png"
     },
     {
-      "uri": "textures/EXT_plastic.2_baseColor.png"
+      "uri": "maserati_textures/EXT_plastic.2_baseColor.png"
     },
     {
-      "uri": "textures/EXT_plastic.2_normal.png"
+      "uri": "maserati_textures/EXT_plastic.2_normal.png"
     },
     {
-      "uri": "textures/EXT_radiator_baseColor.png"
+      "uri": "maserati_textures/EXT_radiator_baseColor.png"
     },
     {
-      "uri": "textures/EXT_chrome_1_normal.png"
+      "uri": "maserati_textures/EXT_chrome_1_normal.png"
     },
     {
-      "uri": "textures/EXT_rim.2_baseColor.png"
+      "uri": "maserati_textures/EXT_rim.2_baseColor.png"
     },
     {
-      "uri": "textures/EXT_headlight_chrome_satin_baseColor.png"
+      "uri": "maserati_textures/EXT_headlight_chrome_satin_baseColor.png"
     },
     {
-      "uri": "textures/EXT_headlight_plastic_normal.png"
+      "uri": "maserati_textures/EXT_headlight_plastic_normal.png"
     },
     {
-      "uri": "textures/EXT_chrome_2_baseColor.png"
+      "uri": "maserati_textures/EXT_chrome_2_baseColor.png"
     },
     {
-      "uri": "textures/EXT_chrome_2_normal.png"
+      "uri": "maserati_textures/EXT_chrome_2_normal.png"
     },
     {
-      "uri": "textures/INT_plastic_nodet.1_2_baseColor.png"
+      "uri": "maserati_textures/INT_plastic_nodet.1_2_baseColor.png"
     },
     {
-      "uri": "textures/INT_plastic_nodet.1_2_normal.png"
+      "uri": "maserati_textures/INT_plastic_nodet.1_2_normal.png"
     },
     {
-      "uri": "textures/EXT_carbonfiber_metallicRoughness.png"
+      "uri": "maserati_textures/EXT_carbonfiber_metallicRoughness.png"
     },
     {
-      "uri": "textures/INT_carpaint.1_baseColor.png"
+      "uri": "maserati_textures/INT_carpaint.1_baseColor.png"
     },
     {
-      "uri": "textures/INT_plastic_nodet.1_3_baseColor.png"
+      "uri": "maserati_textures/INT_plastic_nodet.1_3_baseColor.png"
     },
     {
-      "uri": "textures/INT_plastic_nodet.1_3_normal.png"
+      "uri": "maserati_textures/INT_plastic_nodet.1_3_normal.png"
     },
     {
-      "uri": "textures/EXT_chrome_blue.5_baseColor.png"
+      "uri": "maserati_textures/EXT_chrome_blue.5_baseColor.png"
     },
     {
-      "uri": "textures/EXT_front_grille1_baseColor.png"
+      "uri": "maserati_textures/EXT_front_grille1_baseColor.png"
     },
     {
-      "uri": "textures/EXT_front_grille1_normal.png"
+      "uri": "maserati_textures/EXT_front_grille1_normal.png"
     },
     {
-      "uri": "textures/EXT_caliper.2_baseColor.png"
+      "uri": "maserati_textures/EXT_caliper.2_baseColor.png"
     },
     {
-      "uri": "textures/EXT_rim.2_0_normal.png"
+      "uri": "maserati_textures/EXT_rim.2_0_normal.png"
     },
     {
-      "uri": "textures/EXT_tyre.1_0_baseColor.png"
+      "uri": "maserati_textures/EXT_tyre.1_0_baseColor.png"
     },
     {
-      "uri": "textures/EXT_tyre.1_0_normal.png"
+      "uri": "maserati_textures/EXT_tyre.1_0_normal.png"
     },
     {
-      "uri": "textures/EXT_disc_baseColor.png"
+      "uri": "maserati_textures/EXT_disc_baseColor.png"
     },
     {
-      "uri": "textures/EXT_disc_normal.png"
+      "uri": "maserati_textures/EXT_disc_normal.png"
     },
     {
-      "uri": "textures/EXT_brakelight_baseColor.png"
+      "uri": "maserati_textures/EXT_brakelight_baseColor.png"
     },
     {
-      "uri": "textures/EXT_brakelight_normal.png"
+      "uri": "maserati_textures/EXT_brakelight_normal.png"
     }
   ],
   "materials": [
