@@ -10,13 +10,13 @@
 </head>
 <body>
   <button id="startAndroidAR" style="display: none;">Start AR (Android)</button>
-  <!-- <a id="iosARLink" href="https://cdn.jsdelivr.net/gh/gowthamlabs/webxr_ar@webgl_3D_models/concept_car.usdz" rel="ar" style="display: none;">
-    <img src="ar-icon.png" alt="View in AR"> -->
+  <a id="iosARLink" href="https://cdn.jsdelivr.net/gh/gowthamlabs/webxr_ar@webgl_3D_models/concept_car.usdz" rel="ar" style="display: none;">
+    <img src="ar-icon.png" alt="View in AR"> 
   </a>
    <div id="log">Touch interactions will appear here...</div> 
   <select id="modelSelector">
-    <option value="https://cdn.jsdelivr.net/gh/gowthamlabs/webxr_ar@webgl_3D_models/maserati_scene.gltf">Maserati</option>
     <option value="https://cdn.jsdelivr.net/gh/gowthamlabs/webxr_ar@webgl_3D_models/concept_car_scene.gltf">Concept Car</option>
+    <option value="https://cdn.jsdelivr.net/gh/gowthamlabs/webxr_ar@webgl_3D_models/maserati_scene.gltf">Maserati</option>
   </select>
   <script>
     async function activateAndroidAR() {
@@ -51,7 +51,7 @@
       // Stronger light from behind
       const backLight = new THREE.DirectionalLight(0xffffff, 2.5); // High intensity for back light
       backLight.position.set(0, 10, 10); // Positioned behind
-      scene.add(backLight);*/
+      scene.add(backLight);
 
       // Additional spotlight from the left for focused illumination
       const leftSpotLight = new THREE.SpotLight(0xffffff, 1.5); // Additional left spotlight
@@ -65,7 +65,7 @@
       backSpotLight.position.set(0, 15, 15); // Positioned diagonally from behind
       backSpotLight.target.position.set(0, 0, -2); // Focused on the model
       scene.add(backSpotLight);
-      scene.add(backSpotLight.target);
+      scene.add(backSpotLight.target); */
 
       const renderer = new THREE.WebGLRenderer({ alpha: true, preserveDrawingBuffer: true, canvas, context: gl });
       renderer.autoClear = false;
@@ -129,7 +129,8 @@
       }
 
       // Show UI elements after camera is loaded
-      logElement.style.display = "block";
+      // logElement.style.display = "block"; enabled when you want to see the logs in screen
+      logElement.style.display = "none";
       modelSelector.style.display = "block";
       startButton.style.display = "none";
 
@@ -238,7 +239,7 @@
       // Handle AR session end
       session.addEventListener("end", () => {
         updateLog(""); // Clear log content
-        // logElement.style.display = "none"; // Hide log
+        logElement.style.display = "none"; // Hide log
         modelSelector.style.display = "none"; // Hide dropdown
         startButton.style.display = "block"; // Show Start AR button
       });
@@ -249,9 +250,9 @@
     if (navigator.userAgent.includes("Android")) {
       document.getElementById("startAndroidAR").style.display = "block";
       document.getElementById("startAndroidAR").addEventListener("click", activateAndroidAR);
-    } /*else if (navigator.userAgent.includes('iPhone') || navigator.userAgent.includes('iPad')) {
+    } else if (navigator.userAgent.includes('iPhone') || navigator.userAgent.includes('iPad')) {
       document.getElementById('iosARLink').style.display = 'block';
-    } */ else {
+    } else {
       alert("AR is only supported on Android with Chrome.");
     }
   </script>
