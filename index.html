@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hugging Face + WebXR AR</title>
+  <script src="https://unpkg.com/three@0.126.0/build/three.js"></script>
+</head>
+<body style="margin: 0; overflow: hidden;">
+  <button id="startAR" style="position: absolute; top: 20px; left: 20px; z-index: 1; padding: 10px; background: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer;">
+    Start AR Experience
+  </button>
+
+  <script>
+    const HUGGINGFACE_API_KEY = "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"; // Replace with your Hugging Face API Key
+
+    // Function to call Hugging Face text generation API
+    async function fetchHuggingFaceText(prompt) {
+      const url = "https://api-inference.huggingface.co/models/gpt2";
+      const response = await fetch(url, {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${HUGGINGFACE_API_KEY}`,
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ inputs: prompt })
+      });
+
+      const data = await response.json();
+      if (data.error) {
+        console.error("Error from Hugging Face:", data.error);
+        return "Error generating text.";
+      }
+      return data[0].generated_text;
+    }
+
+    // Function to call Hugging Face image generation API (e.g., Stable Diffusion)
+    async function fetchHuggingFaceImage(prompt) {
+      const url = "https://api-inference.huggingface.co/models/stabilityai/stable-diffusion-2";
+      const response = await fetch(url, {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${HUGGINGFACE_API_KEY}`,
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ inputs: prompt })
+      });
+
+      const blob = await response.blob();
+      return URL.createObjectURL(blob);
+    }
+
+    async function startAR() {
+      // Check if WebXR is supported
+      if (!navigator.xr || !navigator.xr.isSessionSupported) {
+        alert("WebXR is not supported on this device.");
+        return;
+      }
+
+      // Initialize WebGL and AR session
+      const canvas = document.createElement("canvas");
+      document.body.appendChild(canvas);
+      const gl = canvas.getContext("webgl", { xrCompatible: true });
+
+      const renderer = new THREE.WebGLRenderer({ canvas: canvas, alpha: true });
+      renderer.xr.enabled = true;
+
+      const scene = new THREE.Scene();
+      const camera = new THREE.PerspectiveCamera();
+
+      // Add light to the scene
+      const light = new THREE.DirectionalLight(0xffffff, 1);
+      light.position.set(1, 2, 3);
+      scene.add(light);
+
+      const ambientLight = new THREE.AmbientLight(0x404040); // Soft white light
+      scene.add(ambientLight);
+
+      // Start AR session
+      const session = await navigator.xr.requestSession("immersive-ar", { requiredFeatures: ["local"] });
+      session.updateRenderState({ baseLayer: new XRWebGLLayer(session, gl) });
+
+      const referenceSpace = await session.requestReferenceSpace("local");
+
+      // Add placeholder text to AR
+      const loader = new THREE.FontLoader();
+      loader.load("https://threejs.org/examples/fonts/helvetiker_regular.typeface.json", async (font) => {
+        const textPrompt = "Explain augmented reality in simple terms.";
+        const huggingFaceText = await fetchHuggingFaceText(textPrompt);
+
+        const textGeometry = new THREE.TextGeometry(huggingFaceText.slice(0, 100), { // Limit text length
+          font: font,
+          size: 0.05,
+          height: 0.01,
+        });
+
+        const textMaterial = new THREE.MeshStandardMaterial({ color: 0xffffff });
+        const textMesh = new THREE.Mesh(textGeometry, textMaterial);
+
+        textMesh.position.set(0, 1, -1); // Place the text 1m in front of the user
+        scene.add(textMesh);
+      });
+
+      // Fetch an image from Hugging Face and add it to AR
+      const imagePrompt = "A futuristic concept car in a sci-fi setting.";
+      const imageUrl = await fetchHuggingFaceImage(imagePrompt);
+
+      const textureLoader = new THREE.TextureLoader();
+      textureLoader.load(imageUrl, (texture) => {
+        const plane = new THREE.Mesh(
+          new THREE.PlaneGeometry(0.5, 0.5), // Plane size
+          new THREE.MeshBasicMaterial({ map: texture })
+        );
+
+        plane.position.set(0, 0.5, -1); // Place the image 1m in front of the user
+        scene.add(plane);
+      });
+
+      renderer.setAnimationLoop(() => {
+        renderer.render(scene, camera);
+      });
+
+      renderer.xr.setSession(session);
+    }
+
+    document.getElementById("startAR").addEventListener("click", startAR);
+  </script>
+</body>
+</html>
